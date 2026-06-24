@@ -6,7 +6,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/yandex-cloud/k8s-csi-s3/pkg/driver"
+	"github.com/dreamlabnet/csi-s3/pkg/driver"
 
 	"github.com/kubernetes-csi/csi-test/pkg/sanity"
 )

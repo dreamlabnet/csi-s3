@@ -2,121 +2,6 @@
 
 This is a Container Storage Interface ([CSI](https://github.com/container-storage-interface/spec/blob/master/spec.md)) for S3 (or S3 compatible) storage. This can dynamically allocate buckets and mount them via a fuse mount into any container.
 
-## Kubernetes installation
-
-### Requirements
-
-* Kubernetes 1.17+
-* Kubernetes has to allow privileged containers
-* Docker daemon must allow shared mounts (systemd flag `MountFlags=shared`)
-
-### Helm chart
-
-Helm chart is published at `https://yandex-cloud.github.io/k8s-csi-s3`:
-
-```
-helm repo add yandex-s3 https://yandex-cloud.github.io/k8s-csi-s3/charts
-
-helm install csi-s3 yandex-s3/csi-s3
-```
-
-### Manual installation
-
-#### 1. Create a secret with your S3 credentials
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: csi-s3-secret
-  # Namespace depends on the configuration in the storageclass.yaml
-  namespace: kube-system
-stringData:
-  accessKeyID: <YOUR_ACCESS_KEY_ID>
-  secretAccessKey: <YOUR_SECRET_ACCESS_KEY>
-  # For AWS set it to "https://s3.<region>.amazonaws.com", for example https://s3.eu-central-1.amazonaws.com
-  endpoint: https://storage.yandexcloud.net
-  # For AWS set it to AWS region
-  #region: ""
-```
-
-The region can be empty if you are using some other S3 compatible storage.
-
-#### 2. Deploy the driver
-
-```bash
-cd deploy/kubernetes
-kubectl create -f provisioner.yaml
-kubectl create -f driver.yaml
-kubectl create -f csi-s3.yaml
-```
-
-##### Upgrading
-
-If you're upgrading from <= 0.35.5 - delete all resources from `attacher.yaml`:
-
-```
-wget https://raw.githubusercontent.com/yandex-cloud/k8s-csi-s3/v0.35.5/deploy/kubernetes/attacher.yaml
-kubectl delete -f attacher.yaml
-```
-
-If you're upgrading from <= 0.40.6 - delete all resources from old `provisioner.yaml`:
-
-```bash
-wget -O old-provisioner.yaml https://raw.githubusercontent.com/yandex-cloud/k8s-csi-s3/v0.40.6/deploy/kubernetes/provisioner.yaml
-kubectl delete -f old-provisioner.yaml
-```
-
-Then reapply `csi-s3.yaml`, `driver.yaml` and `provisioner.yaml`:
-
-```bash
-cd deploy/kubernetes
-kubectl apply -f provisioner.yaml
-kubectl apply -f driver.yaml
-kubectl apply -f csi-s3.yaml
-```
-
-#### 3. Create the storage class
-
-```bash
-kubectl create -f examples/storageclass.yaml
-```
-
-#### 4. Test the S3 driver
-
-1. Create a pvc using the new storage class:
-
-    ```bash
-    kubectl create -f examples/pvc.yaml
-    ```
-
-1. Check if the PVC has been bound:
-
-    ```bash
-    $ kubectl get pvc csi-s3-pvc
-    NAME         STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-    csi-s3-pvc   Bound     pvc-c5d4634f-8507-11e8-9f33-0e243832354b   5Gi        RWO            csi-s3         9s
-    ```
-
-1. Create a test pod which mounts your volume:
-
-    ```bash
-    kubectl create -f examples/pod.yaml
-    ```
-
-    If the pod can start, everything should be working.
-
-1. Test the mount
-
-    ```bash
-    $ kubectl exec -ti csi-s3-test-nginx bash
-    $ mount | grep fuse
-    pvc-035763df-0488-4941-9a34-f637292eb95c: on /usr/share/nginx/html/s3 type fuse.geesefs (rw,nosuid,nodev,relatime,user_id=65534,group_id=0,default_permissions,allow_other)
-    $ touch /usr/share/nginx/html/s3/hello_world
-    ```
-
-If something does not work as expected, check the troubleshooting section below.
-
 ## Additional configuration
 
 ### Bucket
@@ -204,7 +89,7 @@ kubectl logs -l app=csi-s3 -c csi-s3
 This project can be built like any other go application.
 
 ```bash
-go get -u github.com/yandex-cloud/k8s-csi-s3
+go get -u github.com/dreamlabnet/csi-s3
 ```
 
 ### Build executable
