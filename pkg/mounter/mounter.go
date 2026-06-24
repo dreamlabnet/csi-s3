@@ -130,7 +130,7 @@ func FindFuseMountProcess(path string) (*os.Process, error) {
 }
 
 func waitForProcess(p *os.Process, limit int) error {
-	for backoff := 0; backoff < limit; backoff++ {
+	for backoff := range limit {
 		cmdLine, err := getCmdLine(p.Pid)
 		if err != nil {
 			glog.Warningf("Error checking cmdline of PID %v, assuming it is dead: %s", p.Pid, err)
