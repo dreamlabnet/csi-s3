@@ -13,8 +13,8 @@
 # limitations under the License.
 .PHONY: test build container push clean
 
-REGISTRY_NAME=reg0.dreamlab.net/cysoc
-IMAGE_NAME=csi-s3
+REGISTRY_NAME=reg0.dreamlab.net
+IMAGE_NAME=cysoc/csi-s3
 VERSION ?= 0.43.7
 IMAGE_TAG=$(REGISTRY_NAME)/$(IMAGE_NAME):$(VERSION)
 TEST_IMAGE_TAG=$(IMAGE_NAME):test
