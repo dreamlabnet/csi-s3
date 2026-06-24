@@ -151,7 +151,7 @@ func (geesefs *geesefsMounter) Mount(target, volumeID string) error {
 	}
 	pluginDir := os.Getenv("PLUGIN_DIR")
 	if pluginDir == "" {
-		pluginDir = "/var/lib/kubelet/plugins/ru.yandex.s3.csi"
+		pluginDir = "/var/lib/kubelet/plugins/net.dreamlab.s3.csi"
 	}
 	args = append([]string{pluginDir+"/geesefs", "-f", "-o", "allow_other", "--endpoint", geesefs.endpoint}, args...)
 	glog.Info("Starting geesefs using systemd: "+strings.Join(args, " "))

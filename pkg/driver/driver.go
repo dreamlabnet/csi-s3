@@ -42,7 +42,7 @@ type driver struct {
 
 var (
 	vendorVersion = "v1.34.7"
-	driverName    = "ru.yandex.s3.csi"
+	driverName    = "net.dreamlab.s3.csi"
 )
 
 // New initializes the driver
