@@ -1,4 +1,7 @@
-The following authors have created the source code of "k8s-csi-s3" published and distributed by YANDEX LLC as the owner:
+This project is a fork of "k8s-csi-s3" published and distributed by YANDEX LLC.
+The fork is maintained by Dreamlab Technologies AG.
+
+Original authors:
 
 Vitaliy Filippov  vitaliff@yandex-team.ru
 Cyrill Troxler    cyrilltroxler@gmail.com
