@@ -1,6 +1,6 @@
 FROM golang:1.25.9
 
-LABEL maintainers="Vitaliy Filippov <vitalif@yourcmc.ru>"
+LABEL maintainers="Dreamlab Technologies AG <contact@dreamlab.net>"
 LABEL description="csi-s3 testing image"
 
 # Minio download servers are TERRIBLY SLOW as of 2021-10-27

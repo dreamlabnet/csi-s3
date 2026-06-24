@@ -8,7 +8,7 @@ ADD pkg /build/pkg
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o ./s3driver ./cmd/s3driver
 
 FROM alpine:latest
-LABEL maintainers="Vitaliy Filippov <vitalif@yourcmc.ru>"
+LABEL maintainers="Dreamlab Technologies AG <contact@dreamlab.net>"
 LABEL description="csi-s3 slim image"
 
 RUN apk add --no-cache fuse mailcap rclone
