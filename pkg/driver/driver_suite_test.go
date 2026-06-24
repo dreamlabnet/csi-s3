@@ -21,8 +21,8 @@ func initSanityConfig(cfg *sanity.Config) *sanity.Config {
 
 var _ = Describe("S3Driver", func() {
 
-	Context("geesefs", func() {
-		socket := "/tmp/csi-geesefs.sock"
+	Context("s3fs", func() {
+		socket := "/tmp/csi-s3fs.sock"
 		csiEndpoint := "unix://" + socket
 		if err := os.Remove(socket); err != nil && !os.IsNotExist(err) {
 			Expect(err).NotTo(HaveOccurred())
@@ -35,12 +35,12 @@ var _ = Describe("S3Driver", func() {
 
 		Describe("CSI sanity", func() {
 			sanityCfg := initSanityConfig(&sanity.Config{
-				TargetPath:  os.TempDir() + "/geesefs-target",
-				StagingPath: os.TempDir() + "/geesefs-staging",
+				TargetPath:  os.TempDir() + "/s3fs-target",
+				StagingPath: os.TempDir() + "/s3fs-staging",
 				Address:     csiEndpoint,
 				SecretsFile: "../../test/secret.yaml",
 				TestVolumeParameters: map[string]string{
-					"mounter": "geesefs",
+					"mounter": "s3fs",
 					"bucket":  "testbucket0",
 				},
 			})
@@ -48,8 +48,8 @@ var _ = Describe("S3Driver", func() {
 		})
 	})
 
-	Context("geesefs-no-bucket", func() {
-		socket := "/tmp/csi-geesefs-no-bucket.sock"
+	Context("s3fs-no-bucket", func() {
+		socket := "/tmp/csi-s3fs-no-bucket.sock"
 		csiEndpoint := "unix://" + socket
 		if err := os.Remove(socket); err != nil && !os.IsNotExist(err) {
 			Expect(err).NotTo(HaveOccurred())
@@ -62,12 +62,12 @@ var _ = Describe("S3Driver", func() {
 
 		Describe("CSI sanity", func() {
 			sanityCfg := initSanityConfig(&sanity.Config{
-				TargetPath:  os.TempDir() + "/geesefs-no-bucket-target",
-				StagingPath: os.TempDir() + "/geesefs-no-bucket-staging",
+				TargetPath:  os.TempDir() + "/s3fs-no-bucket-target",
+				StagingPath: os.TempDir() + "/s3fs-no-bucket-staging",
 				Address:     csiEndpoint,
 				SecretsFile: "../../test/secret.yaml",
 				TestVolumeParameters: map[string]string{
-					"mounter": "geesefs",
+					"mounter": "s3fs",
 				},
 			})
 			sanity.GinkgoTest(sanityCfg)
@@ -75,33 +75,6 @@ var _ = Describe("S3Driver", func() {
 	})
 
 	/*
-		Context("s3fs", func() {
-			socket := "/tmp/csi-s3fs.sock"
-			csiEndpoint := "unix://" + socket
-			if err := os.Remove(socket); err != nil && !os.IsNotExist(err) {
-				Expect(err).NotTo(HaveOccurred())
-			}
-			driver, err := driver.New("test-node", csiEndpoint)
-			if err != nil {
-				log.Fatal(err)
-			}
-			go driver.Run()
-
-			Describe("CSI sanity", func() {
-				sanityCfg := &sanity.Config{
-					TargetPath:  os.TempDir() + "/s3fs-target",
-					StagingPath: os.TempDir() + "/s3fs-staging",
-					Address:     csiEndpoint,
-					SecretsFile: "../../test/secret.yaml",
-					TestVolumeParameters: map[string]string{
-						"mounter": "s3fs",
-						"bucket":  "testbucket1",
-					},
-				}
-				sanity.GinkgoTest(sanityCfg)
-			})
-		})
-
 		Context("rclone", func() {
 			socket := "/tmp/csi-rclone.sock"
 			csiEndpoint := "unix://" + socket

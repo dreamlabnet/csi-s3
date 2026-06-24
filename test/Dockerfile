@@ -18,7 +18,4 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-RUN wget https://github.com/yandex-cloud/geesefs/releases/latest/download/geesefs-linux-amd64 \
-    -O /usr/bin/geesefs && chmod 755 /usr/bin/geesefs
-
 ENTRYPOINT ["/build/test/test.sh"]

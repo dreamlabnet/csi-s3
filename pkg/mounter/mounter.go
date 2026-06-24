@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	systemd "github.com/coreos/go-systemd/v22/dbus"
 	"github.com/golang/glog"
 	"github.com/mitchellh/go-ps"
 	mount "k8s.io/mount-utils"
@@ -25,12 +24,11 @@ type Mounter interface {
 }
 
 const (
-	s3fsMounterType    = "s3fs"
-	geesefsMounterType = "geesefs"
-	rcloneMounterType  = "rclone"
-	TypeKey            = "mounter"
-	BucketKey          = "bucket"
-	OptionsKey         = "options"
+	s3fsMounterType   = "s3fs"
+	rcloneMounterType = "rclone"
+	TypeKey           = "mounter"
+	BucketKey         = "bucket"
+	OptionsKey        = "options"
 )
 
 // New returns a new mounter depending on the mounterType parameter
@@ -41,9 +39,6 @@ func New(meta *s3.FSMeta, cfg *s3.Config) (Mounter, error) {
 		mounter = cfg.Mounter
 	}
 	switch mounter {
-	case geesefsMounterType:
-		return newGeeseFSMounter(meta, cfg)
-
 	case s3fsMounterType:
 		return newS3fsMounter(meta, cfg)
 
@@ -51,8 +46,8 @@ func New(meta *s3.FSMeta, cfg *s3.Config) (Mounter, error) {
 		return newRcloneMounter(meta, cfg)
 
 	default:
-		// default to GeeseFS
-		return newGeeseFSMounter(meta, cfg)
+		// default to s3fs
+		return newS3fsMounter(meta, cfg)
 	}
 }
 
@@ -76,39 +71,6 @@ func Unmount(path string) error {
 		return err
 	}
 	return nil
-}
-
-func SystemdUnmount(volumeID string) (bool, error) {
-	conn, err := systemd.New()
-	if err != nil {
-		glog.Errorf("Failed to connect to systemd dbus service: %v", err)
-		return false, err
-	}
-	defer conn.Close()
-	unitName := "geesefs-" + systemd.PathBusEscape(volumeID) + ".service"
-	units, err := conn.ListUnitsByNames([]string{unitName})
-	glog.Errorf("Got %v", units)
-	if err != nil {
-		glog.Errorf("Failed to list systemd unit by name %v: %v", unitName, err)
-		return false, err
-	}
-	if len(units) == 0 || units[0].ActiveState == "inactive" || units[0].ActiveState == "failed" {
-		return true, nil
-	}
-
-	resCh := make(chan string)
-	defer close(resCh)
-
-	_, err = conn.StopUnit(unitName, "replace", resCh)
-	if err != nil {
-		glog.Errorf("Failed to stop systemd unit (%s): %v", unitName, err)
-		return false, err
-	}
-
-	res := <-resCh // wait until is stopped
-	glog.Infof("Systemd unit is stopped with result (%s): %s", unitName, res)
-
-	return true, nil
 }
 
 func FuseUnmount(path string) error {

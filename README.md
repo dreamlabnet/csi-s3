@@ -11,8 +11,7 @@ Volume behaviour is controlled through the volume parameters passed to the drive
 By default, csi-s3 will create a new bucket per volume. The bucket name will match that of the volume ID. If you want your volumes to live in a precreated bucket, you can set the `bucket` parameter:
 
 ```
-mounter: geesefs
-options: "--memory-limit 1000 --dir-mode 0777 --file-mode 0666"
+mounter: s3fs
 bucket: some-existing-bucket-name
 ```
 
@@ -20,23 +19,14 @@ If the bucket is specified, it will still be created if it does not exist on the
 
 ### Mounter
 
-The default mounter which is [GeeseFS](https://github.com/yandex-cloud/geesefs).
-However there is also support for two other backends: [s3fs](https://github.com/s3fs-fuse/s3fs-fuse) and [rclone](https://rclone.org/commands/rclone_mount).
+The default mounter is [s3fs](https://github.com/s3fs-fuse/s3fs-fuse).
+There is also support for [rclone](https://rclone.org/commands/rclone_mount).
 
 The mounter can be set with the `mounter` parameter.
 
 As S3 is not a real file system there are some limitations to consider here.
 Depending on what mounter you are using, you will have different levels of POSIX compability.
 Also depending on what S3 storage backend you are using there are not always [consistency guarantees](https://github.com/gaul/are-we-consistent-yet#observed-consistency).
-
-#### GeeseFS
-
-* Almost full POSIX compatibility
-* Good performance for both small and big files
-* Does not store file permissions and custom modification times
-* By default runs **outside** of the csi-s3 container using systemd, to not crash
-  mountpoints with "Transport endpoint is not connected" when csi-s3 is upgraded
-  or restarted. Add `--no-systemd` to `options` to disable this behaviour.
 
 #### s3fs
 
@@ -48,7 +38,7 @@ Also depending on what S3 storage backend you are using there are not always [co
 
 * Poor POSIX compatibility
 * Bad performance for big files, okayish performance for small files
-* Doesn't create directory objects like s3fs or GeeseFS
+* Doesn't create directory objects like s3fs
 * May hang :-)
 
 ## Development

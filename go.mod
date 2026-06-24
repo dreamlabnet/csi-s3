@@ -4,8 +4,6 @@ go 1.25.9
 
 require (
 	github.com/container-storage-interface/spec v1.12.0
-	github.com/coreos/go-systemd/v22 v22.7.0
-	github.com/godbus/dbus/v5 v5.2.2
 	github.com/golang/glog v1.2.5
 	github.com/kubernetes-csi/csi-test v2.2.0+incompatible
 	github.com/minio/minio-go/v7 v7.0.100

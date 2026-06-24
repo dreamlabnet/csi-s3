@@ -207,19 +207,8 @@ func (ns *nodeServer) NodeUnstageVolume(ctx context.Context, req *csi.NodeUnstag
 		return nil, status.Error(codes.InvalidArgument, "Target path missing in request")
 	}
 
-	proc, err := mounter.FindFuseMountProcess(stagingTargetPath)
-	if err != nil {
+	if err := mounter.FuseUnmount(stagingTargetPath); err != nil {
 		return nil, err
-	}
-	exists := false
-	if proc == nil {
-		exists, err = mounter.SystemdUnmount(volumeID)
-		if exists && err != nil {
-			return nil, err
-		}
-	}
-	if !exists {
-		err = mounter.FuseUnmount(stagingTargetPath)
 	}
 	glog.V(4).Infof("s3: volume %s has been unmounted from stage path %v.", volumeID, stagingTargetPath)
 
