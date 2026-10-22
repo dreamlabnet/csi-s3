@@ -28,6 +28,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/dreamlabnet/csi-s3/pkg/mounter"
 	"github.com/dreamlabnet/csi-s3/pkg/s3"
+	"github.com/minio/minio-go/v7"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -119,7 +120,7 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	var deleteErr error
 	if prefix == "" {
 		// prefix is empty, we delete the whole bucket
-		if err := client.RemoveBucket(bucketName); err != nil && err.Error() != "The specified bucket does not exist" {
+		if err := client.RemoveBucket(bucketName); err != nil && minio.ToErrorResponse(err).Code != minio.NoSuchBucket {
 			deleteErr = err
 		}
 		glog.V(4).Infof("Bucket %s removed", bucketName)
